@@ -11,6 +11,7 @@
   "C_Cpp.errorSquiggles": "disabled",
   "files.associations": {
     "iostream": "cpp",
-    "cmath": "cpp"
+    "cmath": "cpp",
+    "*.tcc": "cpp"
   }
 }
