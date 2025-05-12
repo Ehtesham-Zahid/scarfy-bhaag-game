@@ -1,2 +1,4 @@
 Makefile
 *.exe
+config.bat
+node_modules
