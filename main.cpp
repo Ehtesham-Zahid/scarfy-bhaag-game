@@ -44,14 +44,15 @@ unsigned int score = 0;
 int health = 100; // Changed from unsigned int to int for proper health check
 
 // Entity states
-typedef struct {
+
+struct Entity {
     Texture2D texture;
     Vector2 position;
     float speed;
     bool active;
     float damageCooldown;
     float cooldownTime;
-} Entity;
+};
 
 vector<Entity> coins;
 vector<Entity> deaths;
@@ -76,6 +77,54 @@ Music backgroundMusic;
 Sound gameOverSound;
 float normalMusicPitch = 1.0f;
 float slowMusicPitch = 0.8f;  // Changed from 0.8f to 0.6f for a more serious tone in level 6
+
+
+// ========================= GAME INITIALIZATION FUNCTIONS =========================
+void loadTextures() {
+
+    // Load Menu textures
+    menuBackground = LoadTexture("./resources/images/bg-1.jpg");
+    menuLogo = LoadTexture("./resources/images/logo.png");
+    playButtonImage = LoadTexture("./resources/images/play-button.png");
+
+    // Load Game Over textures
+    gameOverBg = LoadTexture("./resources/images/bg-6.jpg");
+    gameOverImage = LoadTexture("./resources/images/game-over.png");
+    playAgainBtn = LoadTexture("./resources/images/play-again.png");
+    scoreCardBtn = LoadTexture("./resources/images/score-card.png");
+
+
+    // Load background textures
+    initialBg = LoadTexture("./resources/images/bg-1.jpg");
+    bg2 = LoadTexture("./resources/images/bg-2.jpg");
+    bg3 = LoadTexture("./resources/images/bg-3.jpg");
+    bg4 = LoadTexture("./resources/images/bg-4.jpg");
+    bg5 = LoadTexture("./resources/images/bg-5.jpg");
+    bg6 = LoadTexture("./resources/images/bg-6.jpg");
+
+     // Player texture
+    scarfyTexture = LoadTexture("./resources/images/scarfy.png");
+
+    // Entity textures
+    coinTexture = LoadTexture("./resources/images/coin.png");
+    deathTexture = LoadTexture("./resources/images/death.png");
+    stoneTexture = LoadTexture("./resources/images/stone.png");
+    heartTexture = LoadTexture("./resources/images/heart.png");
+    treasureTexture = LoadTexture("./resources/images/treasure.png");
+
+    // Add to loadTextures() function
+    dangerTexture = LoadTexture("./resources/images/danger.png");
+}
+
+void loadSounds() {
+    walkSound = LoadSound("./resources/sounds/Footstep-A.mp3");
+    landingSound = LoadSound("./resources/sounds/Footstep-B.mp3");
+    coinSound = LoadSound("./resources/sounds/coin.mp3");
+    hurtSound = LoadSound("./resources/sounds/death.mp3");
+    gameOverSound = LoadSound("./resources/sounds/game-over.mp3");
+    backgroundMusic = LoadMusicStream("./resources/sounds/bg-music.mp3");
+    SetMusicVolume(backgroundMusic, 0.5f);  // Set music volume to 50%
+}
 
 // ========================= SCARFY (PLAYER) FUNCTIONS =========================
 void initScarfy() {
@@ -199,54 +248,7 @@ Rectangle getEntityCollisionRect(const Entity& entity) {
     return {entity.position.x, entity.position.y, (float)entity.texture.width, (float)entity.texture.height};
 }
 
-// ========================= GAME INITIALIZATION FUNCTIONS =========================
-void loadTextures() {
 
-    // Load Menu textures
-    menuBackground = LoadTexture("./resources/images/bg-1.jpg");
-    menuLogo = LoadTexture("./resources/images/logo.png");
-    playButtonImage = LoadTexture("./resources/images/play-button.png");
-
-    // Load Game Over textures
-    gameOverBg = LoadTexture("./resources/images/bg-6.jpg");
-    gameOverImage = LoadTexture("./resources/images/game-over.png");
-    playAgainBtn = LoadTexture("./resources/images/play-again.png");
-    scoreCardBtn = LoadTexture("./resources/images/score-card.png");
-
-
-    // Load background textures
-    initialBg = LoadTexture("./resources/images/bg-1.jpg");
-    bg2 = LoadTexture("./resources/images/bg-2.jpg");
-    bg3 = LoadTexture("./resources/images/bg-3.jpg");
-    bg4 = LoadTexture("./resources/images/bg-4.jpg");
-    bg5 = LoadTexture("./resources/images/bg-5.jpg");
-    bg6 = LoadTexture("./resources/images/bg-6.jpg");
-
-
-
-     // Player texture
-    scarfyTexture = LoadTexture("./resources/images/scarfy.png");
-
-    // Entity textures
-    coinTexture = LoadTexture("./resources/images/coin.png");
-    deathTexture = LoadTexture("./resources/images/death.png");
-    stoneTexture = LoadTexture("./resources/images/stone.png");
-    heartTexture = LoadTexture("./resources/images/heart.png");
-    treasureTexture = LoadTexture("./resources/images/treasure.png");
-
-    // Add to loadTextures() function
-    dangerTexture = LoadTexture("./resources/images/danger.png");
-}
-
-void loadSounds() {
-    walkSound = LoadSound("./resources/sounds/Footstep-A.mp3");
-    landingSound = LoadSound("./resources/sounds/Footstep-B.mp3");
-    coinSound = LoadSound("./resources/sounds/coin.mp3");
-    hurtSound = LoadSound("./resources/sounds/death.mp3");
-    gameOverSound = LoadSound("./resources/sounds/game-over.mp3");
-    backgroundMusic = LoadMusicStream("./resources/sounds/bg-music.mp3");
-    SetMusicVolume(backgroundMusic, 0.5f);  // Set music volume to 50%
-}
 
 Entity createCoin() {
     float screenHeight = GetScreenHeight();
@@ -277,8 +279,6 @@ Entity createTreasure() {
     float y = GetRandomValue(screenHeight / 2 + 100, screenHeight / 2 + 200);  // Lower y position range
     return createEntity(treasureTexture, GetScreenWidth() + 100, y, -3.0f);  // Reduced speed from -4.0f to -3.0f
 }
-
-
 
 void initEntities() {
     // Initialize coins
@@ -312,26 +312,6 @@ void initEntities() {
     }
 }
 
-void initGameScore() {
-    score = 0;
-    level = 1;
-    health = 100;
-    maxDeaths = 1;
-    maxStones = 3;
-    maxHearts = 0;
-    maxChests = 0;
-    treasuresCollectedInLevel = 0;
-    heartsCollectedInLevel = 0;
-}
-
-void initGame() {
-    initGameScore();
-    
-    loadTextures();
-    loadSounds();
-    initScarfy();
-    initEntities();
-}
 
 // ========================= GAME UPDATE FUNCTIONS =========================
 void updateCoins() {
@@ -485,6 +465,8 @@ void updateTreasures() {
     }
 }
 
+// ========================= LEVEL PROGRESSION FUNCTIONS =========================
+
 void updateLevelProgression() {
     // Reset counters when level changes
     static int lastLevel = 1;
@@ -574,6 +556,7 @@ void updateGame() {
     }
 }
 
+
 // ========================= DRAWING FUNCTIONS =========================
 void drawBackground() {
     Texture2D currentBg;
@@ -588,13 +571,16 @@ void drawBackground() {
         default: currentBg = initialBg;
     }
     
+    // BADA KR RAHA HAI
     float bgScaleX = (float)GetScreenWidth() / currentBg.width;
     float bgScaleY = (float)GetScreenHeight() / currentBg.height;
     float scale = fmax(bgScaleX, bgScaleY);
 
+    // CENTER KR RAHA HAI
     float offsetX = (GetScreenWidth() - currentBg.width * scale) / 2.0f;
     float offsetY = (GetScreenHeight() - currentBg.height * scale) / 2.0f;
 
+    // DRAW KR RAHA HAI
     DrawTextureEx(currentBg, {offsetX, offsetY}, 0.0f, scale, WHITE);
 }
 
@@ -706,7 +692,7 @@ void drawGameOverMenu(Texture2D gameOverBg, Texture2D gameOverImage, Texture2D p
     DrawTexture(scoreCardBtn, scoreBtnX, scoreBtnY, WHITE);
     
     // Draw score on the score card button
-    int scoreTxtX = scoreBtnX + scoreCardBtn.width/2 - 100;
+    int scoreTxtX = scoreBtnX + scoreCardBtn.width/2 - 120;
     int scoreTxtY = scoreBtnY + scoreCardBtn.height/2 - 15;
     DrawText(TextFormat("FINAL SCORE: %d", score), scoreTxtX, scoreTxtY, 25, BLACK);
 
@@ -758,6 +744,29 @@ void drawGame() {
     drawEntities();
     drawUI();
 }
+
+
+void initGameScore() {
+    score = 0;
+    level = 1;
+    health = 100;
+    maxDeaths = 1;
+    maxStones = 3;
+    maxHearts = 0;
+    maxChests = 0;
+    treasuresCollectedInLevel = 0;
+    heartsCollectedInLevel = 0;
+}
+
+void initGame() {
+    initGameScore();
+    
+    loadTextures();
+    loadSounds();
+    initScarfy();
+    initEntities();
+}
+
 
 // ========================= CLEANUP FUNCTIONS =========================
 void cleanupGame() {
